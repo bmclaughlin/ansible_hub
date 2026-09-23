@@ -200,7 +200,7 @@ def main():
     validate_server_version(module, vers)
 
     if organization is not None:
-        if not (vers >= "4.10" and vers < "4.11"):
+        if vers < "4.10":
             module.fail_json(
                 msg="The organization parameter is supported only with private automation hub 4.10 (AAP 2.5)."
             )

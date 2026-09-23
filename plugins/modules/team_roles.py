@@ -176,6 +176,15 @@ def get_team_id(module, team_name, organization=None):
             )
         return None
 
+    if organization is not None and matching_teams and matching_teams[0].get("organization") is None:
+        module.fail_json(
+            msg=(
+                "Team `{0}` matched organization `{1}`, but the API response "
+                "did not include organization metadata, so the team could not be verified."
+            ).format(team_name, organization)
+        )
+        return None
+
     if matching_teams:
         return matching_teams[0].get("id")
 

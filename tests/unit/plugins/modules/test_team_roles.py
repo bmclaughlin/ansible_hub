@@ -86,3 +86,19 @@ def test_get_team_id_rejects_ambiguous_team_when_organization_is_omitted_from_re
     module.fail_json.assert_called_once_with(
         msg="Multiple teams named `team1` matched organization `org1`. The API response was ambiguous."
     )
+
+
+def test_get_team_id_rejects_unverified_single_team_for_organization():
+    module = MagicMock()
+    module.make_request.return_value = {
+        "status_code": 200,
+        "json": {"results": [{"id": 1, "name": "team1"}]},
+    }
+
+    assert mod.get_team_id(module, "team1", "org1") is None
+    module.fail_json.assert_called_once_with(
+        msg=(
+            "Team `team1` matched organization `org1`, but the API response "
+            "did not include organization metadata, so the team could not be verified."
+        )
+    )
