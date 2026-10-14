@@ -102,3 +102,42 @@ def test_get_team_id_rejects_unverified_single_team_for_organization():
             "did not include organization metadata, so the team could not be verified."
         )
     )
+
+
+def test_validate_server_version_rejects_before_hub_4_10():
+    module = MagicMock()
+
+    mod.validate_server_version(module, "4.9.14", "org1")
+
+    module.fail_json.assert_called_once_with(
+        msg="This module requires private automation hub version 4.10 or later. Your version is 4.9.14"
+    )
+
+
+def test_validate_server_version_requires_organization_on_hub_4_10():
+    module = MagicMock()
+
+    mod.validate_server_version(module, "4.10.14", None)
+
+    module.fail_json.assert_called_once_with(
+        msg=(
+            "Hub 4.10 team_roles requires the organization parameter for "
+            "Gateway-managed teams. Use group_roles for standalone Hub 4.10."
+        )
+    )
+
+
+def test_validate_server_version_accepts_hub_4_10_with_organization():
+    module = MagicMock()
+
+    mod.validate_server_version(module, "4.10.14", "org1")
+
+    module.fail_json.assert_not_called()
+
+
+def test_validate_server_version_accepts_hub_4_11_without_organization():
+    module = MagicMock()
+
+    mod.validate_server_version(module, "4.11.0", None)
+
+    module.fail_json.assert_not_called()
