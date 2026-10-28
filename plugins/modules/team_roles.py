@@ -121,7 +121,7 @@ object_id:
   returned: when targets are specified and a change was made
 """
 
-from packaging.version import Version
+from ansible.module_utils.compat.version import LooseVersion
 
 from ..module_utils.ah_api_module import AHAPIModule, AHAPIModuleError
 
@@ -310,8 +310,8 @@ def delete_assignment(module, assignment_id):
 
 def validate_server_version(module, version, organization):
     """Validate support for team role assignments on this Hub version."""
-    hub_version = Version(str(version))
-    if hub_version < Version("4.10"):
+    hub_version = LooseVersion(str(version))
+    if hub_version < LooseVersion("4.10"):
         module.fail_json(
             msg=(
                 "This module requires private automation hub version 4.10 or later. "
@@ -319,7 +319,7 @@ def validate_server_version(module, version, organization):
             )
         )
         return
-    if hub_version < Version("4.11") and not organization:
+    if hub_version < LooseVersion("4.11") and not organization:
         module.fail_json(
             msg=(
                 "Hub 4.10 team_roles requires the organization parameter for "

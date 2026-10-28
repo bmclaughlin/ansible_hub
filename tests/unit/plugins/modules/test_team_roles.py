@@ -3,6 +3,8 @@ import pathlib
 import sys
 from unittest.mock import MagicMock
 
+from packaging.version import Version
+
 
 for mock_module in [
     "ansible",
@@ -19,6 +21,8 @@ spec = importlib.util.spec_from_file_location("team_roles", str(_module_path), s
 mod = importlib.util.module_from_spec(spec)
 mod.__package__ = "plugins.modules"
 spec.loader.exec_module(mod)
+# ansible-core is mocked in unit tests; use a real comparator for version gates.
+mod.LooseVersion = Version
 
 
 def test_get_team_id_scopes_lookup_to_organization():
